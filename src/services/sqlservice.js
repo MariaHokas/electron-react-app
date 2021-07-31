@@ -30,7 +30,7 @@ const connectToServer = () => {
       },
     };
 
-    let connection = new Connection(config);
+    const connection = new Connection(config);
 
     connection.connect();
 
@@ -51,24 +51,18 @@ const connectToServer = () => {
   });
 };
 
-/**
- * Read data from the database
- * @param 'connection' connection object to use to connect to DB
- * @param 'sqlQuery' sqlQuery as a string to be executed against the database
- * @returns 'Promise' A promise object with either collection of data or an error
- */
+// eslint-disable-next-line @typescript-eslint/no-shadow
 const readFromDb = (connection, sqlQuery) => {
   return new Promise((resolve, reject) => {
     let products = [];
 
     console.log("Reading rows from the Table...");
-
-    // Read all rows from table
-    let request = new Request(sqlQuery, (err, rowCount, rows) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const request = new Request(sqlQuery, (err, rowCount, rows) => {
       if (err) {
         reject(err);
       } else {
-        console.log(rowCount + " row(s) returned");
+        console.log(`${rowCount} row(s) returned`);
         resolve(products);
         connection.close();
       }
@@ -76,8 +70,10 @@ const readFromDb = (connection, sqlQuery) => {
 
     request.on("doneInProc", (rowCount, more, rows) => {
       products = [];
+      // eslint-disable-next-line array-callback-return
       rows.map((row) => {
-        let result = {};
+        const result = {};
+        // eslint-disable-next-line array-callback-return
         row.map((child) => {
           result[child.metadata.colName] = child.value;
         });
@@ -85,7 +81,6 @@ const readFromDb = (connection, sqlQuery) => {
       });
     });
 
-    // Execute SQL statement
     connection.execSql(request);
   });
 };
@@ -93,9 +88,10 @@ const readFromDb = (connection, sqlQuery) => {
 const getProducts = () => {
   return new Promise((resolve, reject) => {
     connectToServer()
+      // eslint-disable-next-line @typescript-eslint/no-shadow
       .then((connection) => {
-        let sqlStr =
-          "SELECT [Name], [ProductNumber] FROM SalesLT.Product where [ProductNumber] like '%FR%'";
+        const sqlStr =
+          "SELECT [ProductID], [Name], [ProductNumber] FROM SalesLT.Product order by ProductID DESC";
 
         return readFromDb(connection, sqlStr);
       })
@@ -105,3 +101,136 @@ const getProducts = () => {
 };
 
 ipcMain.handle("getproducts", getProducts);
+
+const readOneFromDb = (connection, sqlQuery, productID) => {
+  return new Promise((resolve, reject) => {
+    let products = [];
+
+    console.log("Reading rows from the Table...");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const request = new Request(sqlQuery, (err, rowCount, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(`${rowCount} row(s) returned`);
+        resolve(products);
+        connection.close();
+      }
+    });
+    request.addParameter("ProductID", TYPES.Int, productID);
+    request.on("doneInProc", (rowCount, more, rows) => {
+      products = [];
+      // eslint-disable-next-line array-callback-return
+      rows.map((row) => {
+        const result = {};
+        // eslint-disable-next-line array-callback-return
+        row.map((child) => {
+          result[child.metadata.colName] = child.value;
+        });
+        products.push(result);
+      });
+    });
+
+    connection.execSql(request);
+  });
+};
+
+const getOneProducts = (productID) => {
+  console.log(`Getting product which ID is '${productID}' from Table...`);
+  return new Promise((resolve, reject) => {
+    connectToServer()
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      .then((connection) => {
+        const sqlStr =
+          "SELECT [ProductID], [Name], [ProductNumber], [StandardCost], [ListPrice] FROM SalesLT.Product WHERE ProductID  = @ProductID";
+
+        return readOneFromDb(connection, sqlStr, productID);
+      })
+      .then((products) => resolve(products))
+      .catch((err) => reject(err));
+  });
+};
+
+ipcMain.handle("getOneProducts", async (event, productID) => {
+  const result = await getOneProducts(productID);
+  return result;
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const createNewProduct = (data) => {
+  return new Promise((resolve, reject) => {
+    connectToServer()
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      .then((connection) => {
+        const request = new Request(
+          "INSERT SalesLT.Product (Name, ProductNumber, StandardCost, ListPrice, SellStartDate) OUTPUT INSERTED.ProductID VALUES (@Name, @Number, @Cost, @Price, CURRENT_TIMESTAMP);",
+          // eslint-disable-next-line func-names
+          (err) => {
+            if (err) {
+              reject(err);
+            }
+          }
+        );
+        request.addParameter("Name", TYPES.NVarChar, data.name);
+        request.addParameter("Number", TYPES.NVarChar, data.number);
+        request.addParameter("Cost", TYPES.Int, 11, data.cost);
+        request.addParameter("Price", TYPES.Int, 11, data.price);
+        console.log(request);
+        request.on("row", function (columns) {
+          columns.forEach(function (column) {
+            if (column.value === null) {
+              console.log("NULL");
+            } else {
+              console.log(`Product id of inserted item is ${column.value}`);
+            }
+          });
+        });
+        request.on("requestCompleted", function (rowCount, more) {
+          connection.close();
+        });
+        connection.execSql(request);
+        return console.log(`Product id of inserted ${request.name}`);
+      })
+      .then((products) => resolve(products))
+      .catch((err) => reject(err));
+  });
+};
+
+ipcMain.on("createNewProduct", (event, data) => {
+  // eslint-disable-next-line no-console
+  console.warn(data);
+  createNewProduct(data);
+});
+
+const deleteProduct = (productID) => {
+  console.log(`Deleting '${productID}' from Table...`);
+  return new Promise((resolve, reject) => {
+    connectToServer()
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      .then((connection) => {
+        // Delete the employee record requested
+        const request = new Request(
+          "DELETE FROM SalesLT.Product WHERE ProductID = @ProductID;",
+          (err) => {
+            if (err) {
+              reject(err);
+            }
+          }
+        );
+        request.addParameter("ProductID", TYPES.Int, productID);
+        // Execute SQL statement
+        connection.execSql(request);
+        return console.log(`Product id of deleted ${productID}`);
+      })
+      .then((products) => resolve(products))
+      .catch((err) => reject(err));
+  });
+};
+
+ipcMain.on("deleteProduct", (event, data) => {
+  // eslint-disable-next-line no-console
+  console.warn(data);
+  deleteProduct(data);
+});
+
+// Attempt to connect and execute queries if connection goes through

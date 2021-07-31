@@ -1,0 +1,152 @@
+body {
+  position: relative;
+  color: white;
+  background-color: #659dbd;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  border: solid #659dbd;
+}
+
+button {
+  background-color: #8d8741;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  appearance: none;
+  font-size: 1rem;
+  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
+    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
+  transition: transform ease-in 0.1s;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-top: 5px;
+  outline-width: 0;
+  -webkit-app-region: no-drag;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background-color: white;
+  color: #659dbd;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  height: fit-content;
+  width: fit-content;
+  margin: 10px;
+}
+
+table {
+  margin: auto;
+  margin-top: 50px;
+  border: 1px solid #fbeec1;
+  box-shadow: 1px 2px white;
+  margin-bottom: 20px;
+}
+
+td,
+th {
+  text-align: left;
+  border: 0.1px solid #fbeec1;
+  padding: 5px;
+}
+
+img {
+  border-radius: 50%;
+}
+
+form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+input {
+  margin: auto;
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  outline-width: 0;
+}
+
+input[type="submit"] {
+  background-color: #8d8741;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  appearance: none;
+  font-size: 0.9rem;
+  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
+    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
+  transition: transform ease-in 0.1s;
+  cursor: pointer;
+  outline-width: 0;
+  -webkit-app-region: no-drag;
+}
+
+input[type="submit"]:hover {
+  transform: scale(1.2);
+  background-color: white;
+  color: #659dbd;
+  -webkit-app-region: no-drag;
+}
+
+input:focus {
+  outline-width: 1 solid #8d8741;
+  border: 3px solid #8d8741;
+}
+
+input .header_container {
+  width: 90%;
+  height: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: auto;
+}
+
+::placeholder {
+  font-style: italic;
+  color: #daaa86;
+  opacity: 0.8; /* Firefox */
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.main-window {
+  -webkit-app-region: drag;
+  padding: 0;
+  margin: 0;
+  border-radius: 20px;
+}
+
+.main_window_radius {
+  border-radius: 5px;
+}
+
+.main-window-rounder {
+  border-radius: 5px;
+}
+.img-logo-column {
+  margin: auto;
+  color: #659dbd;
+}
+
+.paragraph-column {
+  margin: auto;
+}

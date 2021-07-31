@@ -1,28 +1,14 @@
-// Import React library
-
 import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import "./App.global.css";
+import Main from "./components/Main";
 
-import ProductList from "./components/ProductList";
-
-const App = () => {
+export default function App() {
   return (
-    <div>
-      <p>Hello,</p>
-
-      <p>
-        This is a sample application to demonstrate the use of{" "}
-        <strong>
-          <em>TediousJS within Electron/React App</em>
-        </strong>
-      </p>
-
-      <hr />
-
-      <ProductList />
-    </div>
+    <Router>
+      <Switch>
+        <Route path="/" component={Main} />
+      </Switch>
+    </Router>
   );
-};
-
-// Export the main component
-
-export default App;
+}
