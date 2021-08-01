@@ -1,16 +1,7 @@
 import React from "react";
-import Logo from "../images/images.jpg";
 import { ipcRenderer as ipc } from "electron";
 
-export default function Header(props: {
-  headerText:
-    | boolean
-    | React.ReactChild
-    | React.ReactFragment
-    | React.ReactPortal
-    | null
-    | undefined;
-}) {
+export default function Header() {
   const reloadWindow = () => {
     ipc.invoke("reloadWindow");
   };
@@ -30,10 +21,6 @@ export default function Header(props: {
   return (
     <header>
       <div className="header-container">
-        <div className="img-logo-column">
-          <img width="50" src={Logo} alt="Logo" />
-          <h4 className="header-text">{props.headerText}</h4>
-        </div>
         <div className="nav-button-row">
           <button className="nav-button" type="button" onClick={reloadWindow}>
             <i className="fas fa-redo"></i>

@@ -25,6 +25,7 @@ function createWindow() {
     frame: false,
     minWidth: 600,
     minHeight: 720,
+    acceptFirstMouse: true,
     webPreferences: {
       nodeIntegration: true,
     },
@@ -56,6 +57,7 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
   require("./src/services/sqlservice");
+  win.focus();
 });
 
 app.on("window-all-closed", () => {

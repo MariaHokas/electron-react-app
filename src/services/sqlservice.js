@@ -1,11 +1,11 @@
-const Connection = require("tedious").Connection;
-const Request = require("tedious").Request;
+/* eslint-disable promise/always-return */
+const { Connection } = require("tedious");
+const { Request } = require("tedious");
 const { ipcMain } = require("electron");
+const { TYPES } = require("tedious");
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const async = require("async");
 
-/**
- * Connect to the database
- * @returns 'Promise' A promise object containing an open connection to the database
- */
 const connectToServer = () => {
   return new Promise((resolve, reject) => {
     const config = {
@@ -19,13 +19,8 @@ const connectToServer = () => {
       },
       options: {
         database: process.env.DB_DBNAME,
-
-        // These two settings are really important to make successfull connection
         encrypt: false,
         trustServerCertificate: false,
-
-        // This will allow you to access the rows returned.
-        // See 'doneInProc' event below
         rowCollectionOnDone: true,
       },
     };
@@ -34,12 +29,12 @@ const connectToServer = () => {
 
     connection.connect();
 
+    // eslint-disable-next-line func-names
     connection.on("connect", function (err) {
       if (err) {
         console.log("Error: ", err);
         reject(err);
       } else {
-        // If no error, then good to go...
         console.log("Connection Successful!");
         resolve(connection);
       }

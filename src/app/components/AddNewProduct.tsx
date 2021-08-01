@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import { ipcRenderer as ipc } from "electron";
 
 interface InitialValuesProduct {
@@ -8,7 +8,9 @@ interface InitialValuesProduct {
   price?: number;
 }
 interface NewProductProps extends InitialValuesProduct {
-  setOpen: (setOpen: boolean) => void;
+  showProducts: (showProducts: boolean) => void;
+  setButtonText: (setButtonText: string) => void;
+  setQuery: (setQuery: boolean) => void;
 }
 
 const initialValues: InitialValuesProduct = {
@@ -18,20 +20,25 @@ const initialValues: InitialValuesProduct = {
   price: 0,
 };
 
-const AddNewProduct: React.FC<NewProductProps> = ({ setOpen }) => {
-  const [product, setProduct] = useState(initialValues);
+const AddNewProduct: React.FC<NewProductProps> = ({
+  showProducts,
+  setButtonText,
+  setQuery,
+}) => {
+  const [product, setProduct] = useState<InitialValuesProduct>(initialValues);
+  const inputRef = useRef<HTMLInputElement>();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setProduct({
-      ...product,
-      [event.target.name]: event.target.value,
-    });
+    const { name, value } = event.target;
+    setProduct({ ...product, [name]: value });
   };
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     ipc.send("createNewProduct", product);
-    setOpen(true);
+    setButtonText("Add Product");
+    setQuery(false);
+    showProducts(true);
   };
 
   return (
@@ -39,6 +46,7 @@ const AddNewProduct: React.FC<NewProductProps> = ({ setOpen }) => {
       <div>
         <form onSubmit={handleSubmit}>
           <input
+            ref={inputRef}
             type="text"
             placeholder="Name"
             value={product?.name}
@@ -51,6 +59,7 @@ const AddNewProduct: React.FC<NewProductProps> = ({ setOpen }) => {
             value={product?.number}
             name="number"
             onChange={handleChange}
+            onClick={focus}
           />
           <input
             type="number"
@@ -65,6 +74,7 @@ const AddNewProduct: React.FC<NewProductProps> = ({ setOpen }) => {
             value={product?.price}
             name="price"
             onChange={handleChange}
+            onClick={focus}
           />
           <input type="submit" value="Submit" />
         </form>

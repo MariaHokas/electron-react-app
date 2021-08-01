@@ -37,10 +37,10 @@ const ProductEdit: React.FC<IProduct> = ({ productOneQuery }) => {
   };
 
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-    setProduct({
-      ...product,
+    setProduct((prevValues) => ({
+      ...prevValues,
       [event.target.name]: event.target.value,
-    });
+    }));
   };
 
   const handleSubmit = (event: React.SyntheticEvent) => {

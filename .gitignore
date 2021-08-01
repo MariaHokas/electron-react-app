@@ -102,3 +102,5 @@ dist
 
 # TernJS port file
 .tern-port
+src/app/components/formitTest.tsx
+src/app/components/formikedit.tsx

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ipcRenderer as ipc } from "electron";
 import ProductEdit from "./productEdit";
+import AddNewProduct from "./AddNewProduct";
 
 interface IProduct {
   Name?: string;
@@ -11,16 +12,26 @@ interface IProduct {
 const productsFromDB: IProduct[] = [];
 
 const ProductList = () => {
-  const [show, showProducts] = useState(false);
-  const [openEdit, SetOpenEdit] = useState(false);
   const [products, setProducts] = useState(productsFromDB);
   const [productOneQuery, setProductOneQuery] = useState();
+  const [show, showProducts] = useState(false);
+  const [openEdit, SetOpenEdit] = useState(false);
   const [query, setQuery] = useState(false);
+  const [buttonText, setButtonText] = useState("Add Product");
+
+  const activateAddNewWindow = () => {
+    if (!show) {
+      showProducts(true);
+      setButtonText("Add Product");
+    } else {
+      showProducts(false);
+      setButtonText("Close");
+    }
+  };
 
   useEffect(() => {
     ipc.invoke("getproducts").then((product) => {
       setProducts(product);
-      console.log("ykkonen", product);
       showProducts(true);
     });
     setQuery(true);
@@ -29,28 +40,32 @@ const ProductList = () => {
     };
   }, [query]);
 
-  function handleDelete(productID: number | undefined) {
+  const handleDelete = (productID: number | undefined) => {
     ipc.send("deleteProduct", productID);
     setQuery(false);
     return console.log("tämä", query);
-  }
+  };
 
-  function handleEdit(productID: number | undefined): void {
+  const handleEdit = (productID: number | undefined): void => {
     SetOpenEdit(true);
     console.log(productID);
     ipc.invoke("getOneProducts", productID).then((oneProduct) => {
       setProductOneQuery(oneProduct);
-      console.log("oneproduct listasta", oneProduct);
-
       showProducts(false);
     });
-  }
-
+  };
   if (products.length > 0)
     return (
       <div>
+        <button type="button" onClick={activateAddNewWindow}>
+          {buttonText}
+        </button>
         {!show ? (
-          "loading "
+          <AddNewProduct
+            showProducts={showProducts}
+            setButtonText={setButtonText}
+            setQuery={setQuery}
+          />
         ) : (
           <table>
             <thead>
@@ -89,7 +104,6 @@ const ProductList = () => {
             </tbody>
           </table>
         )}
-        {openEdit ? <ProductEdit productOneQuery={productOneQuery} /> : null}
       </div>
     );
   if (openEdit)
@@ -98,7 +112,6 @@ const ProductList = () => {
         <ProductEdit productOneQuery={productOneQuery} />
       </>
     );
-
   return (
     <>
       <p>Sorry I did not find anything..</p>
