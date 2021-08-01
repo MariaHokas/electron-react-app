@@ -1,8 +1,11 @@
 const { app, BrowserWindow } = require("electron");
 require("dotenv").config();
+const { ipcMain } = require("electron");
 
 // Keep a reference for dev mode
 let dev = false;
+
+let win = BrowserWindow;
 
 if (
   process.defaultApp ||
@@ -16,19 +19,17 @@ const path = require("path");
 const url = require("url");
 
 function createWindow() {
-  // Create the browser window.
-  const win = new BrowserWindow({
-    width: 1280,
-    height: 720,
+  win = new BrowserWindow({
     backgroundColor: "white",
-    minWidth: 1280,
+    transparent: true,
+    frame: false,
+    minWidth: 600,
     minHeight: 720,
     webPreferences: {
       nodeIntegration: true,
     },
   });
 
-  // and load the index.html of the app.
   let indexPath;
 
   if (dev && process.argv.indexOf("--noDevServer") === -1) {
@@ -49,20 +50,14 @@ function createWindow() {
   win.loadURL(indexPath);
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
   require("./src/services/sqlservice");
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
@@ -70,12 +65,31 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+const reloadWindow = () => {
+  win.reload();
+};
+
+ipcMain.handle("reloadWindow", reloadWindow);
+
+const minimizeWindow = () => {
+  win.minimize();
+};
+
+ipcMain.handle("minimizeWindow", minimizeWindow);
+
+const maximizeWindow = () => {
+  win.maximize();
+};
+
+ipcMain.handle("maximizeWindow", maximizeWindow);
+
+const quitApp = () => {
+  app.quit();
+};
+
+ipcMain.handle("quitApp", quitApp);

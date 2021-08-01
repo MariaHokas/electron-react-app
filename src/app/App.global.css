@@ -3,11 +3,10 @@ body {
   color: white;
   background-color: #659dbd;
   font-family: sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   border-radius: 20px;
-  border: solid #659dbd;
+  margin: 0;
+  padding: 0;
+  -webkit-app-region: drag;
 }
 
 button {
@@ -107,14 +106,41 @@ input:focus {
   border: 3px solid #8d8741;
 }
 
-input .header_container {
-  width: 90%;
-  height: 200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  margin: auto;
+.header-container {
+  width: 100%;
+  height: 50px;
+  white-space: nowrap;
+  padding: 0;
+}
+.header-container * {
+  display: inline-block;
+}
+
+.header-text {
+  text-transform: uppercase;
+  position: absolute;
+  top: 0;
+  margin-left: 10px;
+}
+
+.img-logo-column {
+  background-color: #659dbd;
+  margin: 7px;
+}
+
+.nav-button-row {
+  float: right;
+}
+
+.nav-button {
+  background-color: transparent;
+  padding: 2px;
+  margin-left: 10px;
+  font-size: 12px;
+}
+
+.nav-button:last-of-type {
+  margin-right: 10px;
 }
 
 ::placeholder {
@@ -135,18 +161,10 @@ a:hover {
   border-radius: 20px;
 }
 
-.main_window_radius {
+.main-window-radius {
   border-radius: 5px;
 }
 
 .main-window-rounder {
   border-radius: 5px;
-}
-.img-logo-column {
-  margin: auto;
-  color: #659dbd;
-}
-
-.paragraph-column {
-  margin: auto;
 }

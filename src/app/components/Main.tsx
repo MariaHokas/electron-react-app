@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Header from "./Header";
-
 import ProductList from "./ProductList";
 
 const Main = () => {
@@ -18,14 +17,16 @@ const Main = () => {
       setOpen(false);
     }
   }
+
   return (
     <>
       <div className="main_window_radius">
-        <Header headerText="React-Electron App" />
+        <Header headerText="React Electron App" />
         <hr />
         <button type="button" onClick={activateAddNewWindow}>
           {buttonText}
         </button>
+
         <ProductList />
       </div>
     </>
